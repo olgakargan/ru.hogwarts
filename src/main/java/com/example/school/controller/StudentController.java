@@ -3,6 +3,7 @@ package com.example.school.controller;
 
 import com.example.school.model.Student;
 import com.example.school.service.StudentService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -22,13 +23,18 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    public Student getStudentInfo(@PathVariable Long id) {
-        return studentService.findStudent(id);
+    public ResponseEntity<Student> getStudentInfo(@PathVariable Long id) {
+        Student student = studentService.findStudent(id);
+        if (student == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(student);
     }
 
     @PutMapping
-    public Student editStudent(@RequestBody Student student) {
-        return studentService.editStudent(student);
+    public ResponseEntity<Student> editStudent(@RequestBody Student student) {
+        Student foundStudent = studentService.editStudent(student);
+        return ResponseEntity.ok(foundStudent);
     }
 
     @DeleteMapping("/{id}")
@@ -42,8 +48,8 @@ public class StudentController {
     }
 
     @GetMapping("/age/{age}")
-    public Collection<Student> findStudentsByAge(@PathVariable int age) {
-        return studentService.findByAge(age);
+    public ResponseEntity<Collection<Student>> filterStudentsByAge(@PathVariable int age) {
+        return ResponseEntity.ok(studentService.findByAge(age));
     }
 
 }
