@@ -48,8 +48,8 @@ public class StudentController {
     }
 
     @GetMapping("/age/{age}")
-    public ResponseEntity<Collection<Student>> filterStudentsByAge(@PathVariable int age) {
-        return ResponseEntity.ok(studentService.findByAge(age));
+    public Collection<Student> findStudentsByAge(@PathVariable int age) {
+        return studentService.findByAge(age);
     }
 
 }

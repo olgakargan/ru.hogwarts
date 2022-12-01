@@ -2,9 +2,6 @@ package com.example.school.service;
 
 
 import com.example.school.exception.NotFoundException;
-import com.example.school.exception.UnableToCreateException;
-import com.example.school.exception.UnableToDeleteException;
-import com.example.school.exception.UnableToUpdateException;
 import com.example.school.model.Student;
 import com.example.school.repository.StudentRepository;
 import org.springframework.stereotype.Service;
@@ -22,11 +19,8 @@ public class StudentService {
     }
 
     public Student createStudent(Student student) {
-        try {
-            return repository.save(student);
-        } catch (RuntimeException e) {
-            throw new UnableToCreateException();
-        }
+        return repository.save(student);
+
     }
 
     public Student findStudent(long id) {
@@ -38,19 +32,15 @@ public class StudentService {
     }
 
     public Student editStudent(Student student) {
-        try {
-            return repository.save(student);
-        } catch (RuntimeException e) {
-            throw new UnableToUpdateException();
-        }
+
+        return repository.save(student);
+
     }
 
     public void deleteStudent(long id) {
-        try {
-            repository.deleteById(id);
-        } catch (RuntimeException e) {
-            throw new UnableToDeleteException();
-        }
+
+        repository.deleteById(id);
+
     }
 
     public Collection<Student> getAllStudents() {

@@ -1,9 +1,6 @@
 package com.example.school.service;
 
 import com.example.school.exception.NotFoundException;
-import com.example.school.exception.UnableToCreateException;
-import com.example.school.exception.UnableToDeleteException;
-import com.example.school.exception.UnableToUpdateException;
 import com.example.school.model.Faculty;
 import com.example.school.repository.FacultyRepository;
 import org.springframework.stereotype.Service;
@@ -21,12 +18,10 @@ public class FacultyService {
     }
 
     public Faculty createFaculty(Faculty faculty) {
-        try {
-            return repository.save(faculty);
-        } catch (RuntimeException e) {
-            throw new UnableToCreateException();
-        }
+
+        return repository.save(faculty);
     }
+
 
     public Faculty findFaculty(long id) {
         Optional<Faculty> optionalFaculty = repository.findById(id);
@@ -37,23 +32,18 @@ public class FacultyService {
     }
 
     public Faculty editFaculty(Faculty faculty) {
-        try {
+
             return repository.save(faculty);
-        } catch (RuntimeException e) {
-            throw new UnableToUpdateException();
-        }
+
+    }
+    public void deleteFaculty(long id) {
+        repository.deleteById(id);
     }
 
-    public void deleteFaculty(long id) {
-        try {
-            repository.deleteById(id);
-        } catch (RuntimeException e) {
-            throw new UnableToDeleteException();
-        }
-    }
     public Collection<Faculty> getAllFaculties() {
         return repository.findAll();
     }
+
     public List<Faculty> findByColor(String color) {
         return repository.findByColor(color);
     }

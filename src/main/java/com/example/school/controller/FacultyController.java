@@ -22,6 +22,7 @@ public class FacultyController {
     }
 
 
+    @GetMapping("/{id}")
     public ResponseEntity<Faculty> getFacultyInfo(@PathVariable Long id) {
         Faculty faculty = facultyService.findFaculty(id);
         if (faculty == null) {
@@ -29,7 +30,7 @@ public class FacultyController {
         }
         return ResponseEntity.ok(faculty);
     }
-
+    @PutMapping
         public ResponseEntity<Faculty> editFaculty(@RequestBody Faculty faculty) {
         Faculty foundFaculty = facultyService.editFaculty(faculty);
         return ResponseEntity.ok(foundFaculty);
@@ -45,7 +46,7 @@ public class FacultyController {
     }
 
     @GetMapping("/color/{color}")
-    public ResponseEntity<Collection<Faculty>> filterFacultiesByColor(@PathVariable String color) {
-        return ResponseEntity.ok(facultyService.findByColor(color));
+    public Collection<Faculty> findFacultiesByColor(@PathVariable String color) {
+        return facultyService.findByColor(color);
     }
 }
