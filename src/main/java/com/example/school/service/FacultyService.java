@@ -12,13 +12,11 @@ import java.util.Optional;
 @Service
 public class FacultyService {
     private final FacultyRepository repository;
-
     public FacultyService(FacultyRepository repository) {
         this.repository = repository;
     }
 
     public Faculty createFaculty(Faculty faculty) {
-
         return repository.save(faculty);
     }
 
@@ -32,10 +30,12 @@ public class FacultyService {
     }
 
     public Faculty editFaculty(Faculty faculty) {
-
+        if (findFaculty(faculty.getId()) != null) {
             return repository.save(faculty);
-
+        }
+        return null;
     }
+
     public void deleteFaculty(long id) {
         repository.deleteById(id);
     }

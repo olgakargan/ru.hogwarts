@@ -32,9 +32,10 @@ public class StudentService {
     }
 
     public Student editStudent(Student student) {
-
-        return repository.save(student);
-
+        if (findStudent(student.getId()) != null) {
+            return repository.save(student);
+        }
+        return null;
     }
 
     public void deleteStudent(long id) {
