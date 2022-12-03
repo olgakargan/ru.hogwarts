@@ -1,50 +1,24 @@
 package com.example.school.service;
 
-import com.example.school.exception.NotFoundException;
 import com.example.school.model.Faculty;
-import com.example.school.repository.FacultyRepository;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Size;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Service
-public class FacultyService {
-    private final FacultyRepository repository;
-    public FacultyService(FacultyRepository repository) {
-        this.repository = repository;
-    }
+public interface FacultyService {
 
-    public Faculty createFaculty(Faculty faculty) {
-        return repository.save(faculty);
-    }
+    Faculty createFaculty(Faculty faculty);
 
 
-    public Faculty findFaculty(long id) {
-        Optional<Faculty> optionalFaculty = repository.findById(id);
-        if (optionalFaculty.isEmpty()) {
-            throw new NotFoundException();
-        }
-        return optionalFaculty.get();
-    }
+    Faculty findFaculty(long id);
 
-    public Faculty editFaculty(Faculty faculty) {
-        if (findFaculty(faculty.getId()) != null) {
-            return repository.save(faculty);
-        }
-        return null;
-    }
+    Faculty editFaculty(Faculty faculty);
 
-    public void deleteFaculty(long id) {
-        repository.deleteById(id);
-    }
+    void deleteFaculty(long id);
 
-    public Collection<Faculty> getAllFaculties() {
-        return repository.findAll();
-    }
+    Collection<Faculty> getAllFaculties();
 
-    public List<Faculty> findByColor(String color) {
-        return repository.findByColor(color);
-    }
+    Collection<Faculty> findByColorOrName(String color, @Size(min = 2, max = 30) String name);
 }

@@ -1,54 +1,25 @@
 package com.example.school.service;
 
 
-import com.example.school.exception.NotFoundException;
 import com.example.school.model.Student;
-import com.example.school.repository.StudentRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
+
+public interface StudentService {
+    Student createStudent(Student student);
+
+    Student addStudentToFaculty(Student student, Long faculty_id);
+
+    Student findStudent(long id);
+
+    Student editStudent(Student student);
 
 
-@Service
-public class StudentService {
-    private final StudentRepository repository;
+    void deleteStudent(long id);
 
-    public StudentService(StudentRepository repository) {
-        this.repository = repository;
-    }
+    Collection<Student> getAllStudents();
 
-    public Student createStudent(Student student) {
-        return repository.save(student);
+    Collection<Student> findByAge(int age);
 
-    }
-
-    public Student findStudent(long id) {
-        Optional<Student> optionalStudent = repository.findById(id);
-        if (optionalStudent.isEmpty()) {
-            throw new NotFoundException();
-        }
-        return optionalStudent.get();
-    }
-
-    public Student editStudent(Student student) {
-        if (findStudent(student.getId()) != null) {
-            return repository.save(student);
-        }
-        return null;
-    }
-
-    public void deleteStudent(long id) {
-
-        repository.deleteById(id);
-
-    }
-
-    public Collection<Student> getAllStudents() {
-        return repository.findAll();
-    }
-
-    public Collection<Student> findByAge(int age) {
-        return repository.findByAge(age);
-    }
+    Collection<Student> findByAgeBetween(int age1, int age2);
 }

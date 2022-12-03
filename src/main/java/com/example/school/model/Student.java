@@ -1,19 +1,35 @@
 package com.example.school.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Min(0)
     private Long id;
+    @Size(min = 2, max = 30)
     private String name;
+    @Min(10)
+    @Max(45)
     private int age;
+@JsonIgnore
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "faculty_id")
+private Faculty faculty;
 
+public Faculty getFaculty(){
+    return faculty;
+}
+public void setFaculty(Faculty faculty){
+    this.faculty = faculty;
+}
     public Long getId() {
         return id;
     }
