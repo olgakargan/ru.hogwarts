@@ -1,12 +1,11 @@
 package com.example.school.service;
 
 import com.example.school.model.Faculty;
-import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.Size;
 import java.util.Collection;
 
-@Service
+
 public interface FacultyService {
 
     Faculty createFaculty(Faculty faculty);

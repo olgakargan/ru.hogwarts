@@ -20,24 +20,12 @@ public class StudentController {
         return studentService.createStudent(student);
     }
 
-    @PostMapping("/{faculty_id}")
-    public Student addStudentToFaculty(@Valid @RequestBody Student student, @PathVariable Long faculty_id) {
-        return studentService.addStudentToFaculty(student, faculty_id);
-    }
+
 
 
     @PutMapping
     public Student editStudent(@Valid @RequestBody Student student) {
         return studentService.editStudent(student);
-
-
-
-
-
-
-
-
-
 
     }
     @GetMapping("/{id}")

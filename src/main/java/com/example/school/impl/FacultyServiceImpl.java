@@ -1,6 +1,6 @@
 package com.example.school.impl;
 
-import com.example.school.exception.*;
+import com.example.school.exception.NotFoundException;
 import com.example.school.model.Faculty;
 import com.example.school.repository.FacultyRepository;
 import com.example.school.service.FacultyService;
@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Optional;
-
-import static com.example.school.exception.ApiException.*;
 
 @Service
 public class FacultyServiceImpl implements FacultyService {
@@ -21,29 +19,21 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty createFaculty(Faculty faculty) {
-        try {
+
             return repository.save(faculty);
-        } catch (RuntimeException e) {
-            throw new UnableToCreateException(UNABLE_TO_CREATE, e);
-        }
+
     }
 
     @Override
     public Faculty editFaculty(Faculty faculty) {
-        try {
-            return repository.save(faculty);
-        } catch (RuntimeException e) {
-            throw new UnableToUpdateException(UNABLE_TO_UPDATE, e);
-        }
-    }
+                   return repository.save(faculty);
+            }
 
     @Override
     public void deleteFaculty(long id) {
-        try {
+
             repository.deleteById(id);
-        } catch (RuntimeException e) {
-            throw new UnableToDeleteException("Faculty", "id", id);
-        }
+
     }
 
     @Override
@@ -62,15 +52,9 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Collection<Faculty> findByColorOrName(String color, String name) {
-        if (color == null && name == null) {
-            throw new BadRequestException(ALL_FIELDS_ARE_NULL);
+
+        return repository.findFacultiesByColorOrNameIgnoreCase(color, name);
         }
 
-        if (name != null) {
-            return repository.findFacultiesByNameIgnoreCase(name);
-        } else {
-            return repository.findFacultiesByColorIgnoreCase(color);
-        }
-    }
 
 }

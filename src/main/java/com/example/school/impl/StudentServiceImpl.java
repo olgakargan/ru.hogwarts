@@ -25,40 +25,32 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student createStudent(Student student) {
-        try {
+
             return studentRepository.save(student);
-        } catch (RuntimeException e) {
-            throw new UnableToCreateException(UNABLE_TO_CREATE, e);
-        }
+
     }
 
     @Override
-    public Student addStudentToFaculty(Student student, Long faculty_id) {
-        try {
-            Faculty faculty = facultyRepository.getById(faculty_id);
+    public Student addStudentToFaculty(Student student, Long facultyId) {
+
+            Faculty faculty = facultyRepository.getById(facultyId);
             student.setFaculty(faculty);
-        } catch (Exception e) {
-            throw new NotFoundException("Faculty", "id", faculty_id);
-        }
+
         return studentRepository.save(student);
     }
 
     @Override
     public Student editStudent(Student student) {
-        try {
+
             return studentRepository.save(student);
-        } catch (RuntimeException e) {
-            throw new UnableToUpdateException(UNABLE_TO_UPDATE, e);
-        }
+
     }
 
     @Override
     public void deleteStudent(long id) {
-        try {
+
             studentRepository.deleteById(id);
-        } catch (RuntimeException e) {
-            throw new UnableToDeleteException("Student", "id", id);
-        }
+
     }
 
     @Override
