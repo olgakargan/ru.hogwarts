@@ -17,6 +17,7 @@ import static com.example.school.exception.ApiException.*;
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final FacultyRepository facultyRepository;
+    private Throwable cause;
 
     public StudentServiceImpl(StudentRepository studentRepository, FacultyRepository facultyRepository) {
         this.studentRepository = studentRepository;
@@ -26,15 +27,15 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student createStudent(Student student) {
 
-            return studentRepository.save(student);
+        return studentRepository.save(student);
 
     }
 
     @Override
     public Student addStudentToFaculty(Student student, Long facultyId) {
 
-            Faculty faculty = facultyRepository.getById(facultyId);
-            student.setFaculty(faculty);
+        Faculty faculty = facultyRepository.getById(facultyId);
+        student.setFaculty(faculty);
 
         return studentRepository.save(student);
     }
@@ -42,14 +43,14 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student editStudent(Student student) {
 
-            return studentRepository.save(student);
+        return studentRepository.save(student);
 
     }
 
     @Override
     public void deleteStudent(long id) {
 
-            studentRepository.deleteById(id);
+        studentRepository.deleteById(id);
 
     }
 
@@ -75,7 +76,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Collection<Student> findByAgeBetween(int min, int max) {
         if (max < min) {
-            throw new BadRequestException(FIRST_AGE_MORE_THAN_SECOND_ERROR);
+            throw new BadRequestException(FIRST_AGE_MORE_THAN_SECOND_ERROR, cause);
         }
         return studentRepository.findByAgeBetween(min, max);
     }

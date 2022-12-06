@@ -21,8 +21,6 @@ public class StudentController {
     }
 
 
-
-
     @PutMapping
     public Student editStudent(@Valid @RequestBody Student student) {
         return studentService.editStudent(student);

@@ -1,38 +1,25 @@
 package com.example.school.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@RestControllerAdvice
+@ControllerAdvice
 class ErrorHandlingControllerAdvice {
+    private final Logger logger = Logger.getLogger(ErrorHandlingControllerAdvice.class.getName());
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-
-    ValidationErrorResponse onConstraintValidationException(ConstraintViolationException e) {
-        ValidationErrorResponse error = new ValidationErrorResponse();
-        for (ConstraintViolation violation : e.getConstraintViolations()) {
-            error.getViolations().add(new Violation(violation.getPropertyPath().toString(), violation.getMessage()));
-        }
-        return error;
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-
-    ValidationErrorResponse onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        ValidationErrorResponse error = new ValidationErrorResponse();
-        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
-            error.getViolations().add(new Violation(fieldError.getField(), fieldError.getDefaultMessage()));
-        }
-        return error;
+    @ExceptionHandler(MultipartException.class)
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    @ResponseBody
+    public String onMultipartException(MultipartException e) {
+        logger.log(Level.SEVERE, e.getMessage());
+        return e.getMessage();
     }
 
 }

@@ -52,9 +52,12 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Collection<Faculty> findByColorOrName(String color, String name) {
+        if (color == null && name == null) {
 
-        return repository.findFacultiesByColorOrNameIgnoreCase(color, name);
+            return repository.findFacultiesByNameIgnoreCase(name);
+        } else {
+            return repository.findFacultiesByColorIgnoreCase(color);
         }
-
+    }
 
 }
