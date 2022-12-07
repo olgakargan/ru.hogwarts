@@ -3,10 +3,10 @@ package com.example.school.repository;
 import com.example.school.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
-    List<Student> findByAge(int age);
+    Collection<Student> findByAge(int age);
 
-    List<Student> findByAgeBetween(int age1, int age2);
+    Collection<Student> findByAgeBetween(int age1, int age2);
 }

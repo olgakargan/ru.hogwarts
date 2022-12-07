@@ -1,6 +1,5 @@
 package com.example.school.service;
 
-import com.example.school.impl.AvatarServiceImpl;
 import com.example.school.model.Avatar;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface AvatarService {
-    void uploadAvatar(Long id, MultipartFile avatarFile) throws AvatarServiceImpl.UnableToUploadFileException;
+    void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException;
 
     Avatar getOrCreateAvatar(Long id);
 
@@ -17,4 +16,8 @@ public interface AvatarService {
     List<Avatar> getAllAvatars();
 
     void deleteAvatarById(Long id) throws IOException;
+
+    Avatar findAvatar(Long studentId);
+
+    Avatar getAvatar(Long studentId);
 }

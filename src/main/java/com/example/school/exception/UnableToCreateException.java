@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.logging.Level;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class UnableToUploadFileException extends ApiException {
-    public UnableToUploadFileException(String unableToUpload, Throwable cause) {
-        super(ApiException.UNABLE_TO_UPLOAD, cause, Level.SEVERE);
+public class UnableToCreateException extends ApiException {
+    public UnableToCreateException(String message, Throwable cause) {
+        super(message + " cause " + cause.getMessage(), Level.SEVERE);
     }
 }
