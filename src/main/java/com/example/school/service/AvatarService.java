@@ -9,15 +9,9 @@ import java.util.List;
 public interface AvatarService {
     void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException;
 
-    Avatar getOrCreateAvatar(Long id);
-
-    Avatar findAvatarById(Long id);
-
-    List<Avatar> getAllAvatars();
-
-    void deleteAvatarById(Long id) throws IOException;
-
-    Avatar findAvatar(Long studentId);
+    Avatar getOrCreateAvatar(Long studentId);
 
     Avatar getAvatar(Long studentId);
+
+    List<Avatar> getAvatars(int pageNumber, int pageSize);
 }

@@ -1,6 +1,5 @@
 package com.example.school.impl;
 
-import com.example.school.exception.ApiException;
 import com.example.school.exception.NotFoundException;
 import com.example.school.exception.UnableToCreateException;
 import com.example.school.exception.UnableToUploadFileException;
@@ -10,16 +9,23 @@ import com.example.school.repository.AvatarRepository;
 import com.example.school.service.AvatarService;
 import com.example.school.service.StudentService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
+import static com.example.school.exception.ApiException.UNABLE_TO_CREATE;
+import static com.example.school.exception.ApiException.UNABLE_TO_UPLOAD;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Service
@@ -44,37 +50,21 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     @Override
-    public Avatar getOrCreateAvatar(Long id) {
-        return null;
-    }
-
-    @Override
-    public Avatar findAvatarById(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<Avatar> getAllAvatars() {
-        return null;
-    }
-
-    @Override
-    public void deleteAvatarById(Long id) throws IOException {
-
-    }
-
-    @Override
-    public Avatar findAvatar(Long studentId) {
+    public Avatar getOrCreateAvatar(Long studentId) {
         return avatarRepository.findAvatarByStudentId(studentId).orElse(new Avatar());
     }
 
     @Override
     public Avatar getAvatar(Long studentId) {
-        Avatar avatar = avatarRepository.getAvatarByStudentId(studentId);
-        if (avatar == null) {
-            throw new NotFoundException("Avatar for Student", "studentId", studentId);
-        }
-        return avatar;
+        return avatarRepository.findAvatarByStudentId(studentId)
+                .orElseThrow(() -> new NotFoundException("Avatar for Student", "studentId", studentId));
+    }
+
+    @Override
+    public List<Avatar> getAvatars(int pageNumber, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(--pageNumber, pageSize,
+                Sort.Direction.ASC, "fileSize");
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 
     private Path getNewPath(MultipartFile avatarFile, Student student) {
@@ -82,10 +72,11 @@ public class AvatarServiceImpl implements AvatarService {
         try {
             filePath = Path.of(avatarsDir, student + "." +
                     getExtension(Objects.requireNonNull(avatarFile.getOriginalFilename())));
+
             Files.createDirectories(filePath.getParent());
             Files.deleteIfExists(filePath);
         } catch (Exception e) {
-            throw new UnableToUploadFileException(ApiException.UNABLE_TO_UPLOAD, e);
+            throw new UnableToUploadFileException(UNABLE_TO_UPLOAD, e);
         }
         return filePath;
     }
@@ -99,12 +90,12 @@ public class AvatarServiceImpl implements AvatarService {
         ) {
             bis.transferTo(bos);
         } catch (Exception e) {
-            throw new UnableToUploadFileException(ApiException.UNABLE_TO_UPLOAD, e);
+            throw new UnableToUploadFileException(UNABLE_TO_UPLOAD, e);
         }
     }
 
     private void fillAndSaveAvatar(MultipartFile avatarFile, Student student, Path filePath) {
-        Avatar avatar = findAvatar(student.getId());
+        Avatar avatar = getOrCreateAvatar(student.getId());
         avatar.setStudent(student);
         avatar.setFilePath(filePath.toString());
         avatar.setFileSize(avatarFile.getSize());
@@ -114,7 +105,7 @@ public class AvatarServiceImpl implements AvatarService {
             avatar.setData(avatarFile.getBytes());
             avatarRepository.save(avatar);
         } catch (Exception e) {
-            throw new UnableToCreateException(ApiException.UNABLE_TO_CREATE, e);
+            throw new UnableToCreateException(UNABLE_TO_CREATE, e);
         }
     }
 
@@ -123,4 +114,4 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
 
-    }
+}
