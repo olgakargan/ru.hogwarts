@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/create/create-faculties-table.sql
+  - include:
+      file: db/changelog/create/create-students-table.sql
+  - include:
+      file: db/changelog/create/create-avatars-table.sql
+  - include:
+      file: db/changelog/insert-faculties.sql
+  - include:
+      file: db/changelog/insert-students.sql
+  - include:
+      file: db/changelog/create-indices.sql
