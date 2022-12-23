@@ -7,7 +7,7 @@ import java.util.logging.Level;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class UnableToCreateException extends ApiException {
-    public UnableToCreateException(String message, Throwable cause) {
+    public UnableToCreateException(Throwable cause, String message) {
         super(message + " cause " + cause.getMessage(), Level.SEVERE);
     }
 }

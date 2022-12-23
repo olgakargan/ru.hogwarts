@@ -1,4 +1,4 @@
-package com.example.school.service;
+package com.example.school.impl;
 
 public interface CrudInterface<T> {
     T create(T t);

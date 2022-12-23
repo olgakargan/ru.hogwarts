@@ -1,13 +1,16 @@
 package com.example.school.impl;
 
+import com.example.school.dto.StudentMapper;
 import com.example.school.exception.NotFoundException;
 import com.example.school.exception.UnableToCreateException;
+import com.example.school.exception.UnableToDeleteException;
 import com.example.school.exception.UnableToUploadFileException;
 import com.example.school.model.Avatar;
 import com.example.school.model.Student;
 import com.example.school.repository.AvatarRepository;
-import com.example.school.service.AvatarService;
-import com.example.school.service.StudentService;
+import com.example.school.repository.StudentRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,73 +18,102 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import static com.example.school.exception.ApiException.UNABLE_TO_CREATE;
-import static com.example.school.exception.ApiException.UNABLE_TO_UPLOAD;
+import static com.example.school.impl.StudentServiceImpl.CREATED;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
+@Log4j2
 public class AvatarServiceImpl implements AvatarService {
     @Value("${avatars.folder}")
     private String avatarsDir;
     private final AvatarRepository avatarRepository;
-    private final StudentService studentService;
+    private final StudentRepository studentRepository;
+    private final StudentMapper mapper;
 
-    public AvatarServiceImpl(AvatarRepository avatarRepository, StudentService studentService) {
-        this.avatarRepository = avatarRepository;
-        this.studentService = studentService;
-    }
 
     @Override
-    public void uploadAvatar(Long studentId, MultipartFile avatarFile) {
-        Student student = studentService.findStudent(studentId);
+    public void uploadAvatar(Long id, MultipartFile avatarFile, String message) {
+        log.info(getCurrentMethodName() + CREATED);
+
+        Student student;
+        try {
+            student = studentRepository.getById(id);
+        } catch (Exception e) {
+            throw new NotFoundException("Student", "id", id, e);
+        }
+
         Path newPath = getNewPath(avatarFile, student);
         copyFile(avatarFile, newPath);
-        fillAndSaveAvatar(avatarFile, student, newPath);
+        fillAndSaveAvatar(avatarFile, student, newPath, message);
     }
 
     @Override
-    public Avatar getOrCreateAvatar(Long studentId) {
-        return avatarRepository.findAvatarByStudentId(studentId).orElse(new Avatar());
+    public void deleteAvatarById(Long id) {
+        log.info(getCurrentMethodName() + CREATED);
+
+        Optional<Avatar> avatar = avatarRepository.findById(id);
+        try {
+            avatarRepository.deleteById(id);
+            Files.deleteIfExists(Path.of(avatar.get().getFilePath()));
+        } catch (RuntimeException | IOException e) {
+            throw new UnableToDeleteException("Avatar", "id", id, e);
+        }
     }
 
     @Override
-    public Avatar getAvatar(Long studentId) {
-        return avatarRepository.findAvatarByStudentId(studentId)
-                .orElseThrow(() -> new NotFoundException("Avatar for Student", "studentId", studentId));
+    public Avatar getOrCreateAvatar(Long id) {
+        log.info(getCurrentMethodName() + CREATED);
+
+        return avatarRepository.findById(id).orElse(new Avatar());
     }
 
     @Override
-    public List<Avatar> getAvatars(int pageNumber, int pageSize) {
+    public Avatar findAvatarById(Long id) {
+        log.info(getCurrentMethodName() + CREATED);
+
+        try {
+            return avatarRepository.getById(id);
+        } catch (Exception e) {
+            throw new NotFoundException("Avatar for Student", "id", id, e);
+        }
+    }
+
+    @Override
+    public List<Avatar> getAllAvatars(int pageNumber, int pageSize) {
+        log.info(getCurrentMethodName() + CREATED);
         PageRequest pageRequest = PageRequest.of(--pageNumber, pageSize,
                 Sort.Direction.ASC, "fileSize");
         return avatarRepository.findAll(pageRequest).getContent();
     }
 
+
     private Path getNewPath(MultipartFile avatarFile, Student student) {
+        log.info(getCurrentMethodName() + CREATED);
+
         Path filePath;
         try {
-            filePath = Path.of(avatarsDir, student + "." +
+            filePath = Path.of(avatarsDir, mapper.toDto(student) + "." +
                     getExtension(Objects.requireNonNull(avatarFile.getOriginalFilename())));
-
             Files.createDirectories(filePath.getParent());
             Files.deleteIfExists(filePath);
         } catch (Exception e) {
-            throw new UnableToUploadFileException(UNABLE_TO_UPLOAD, e);
+            throw new UnableToUploadFileException(e);
         }
         return filePath;
     }
 
     private void copyFile(MultipartFile avatarFile, Path filePath) {
+        log.info(getCurrentMethodName() + CREATED);
+
         try (
                 InputStream is = avatarFile.getInputStream();
                 OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
@@ -90,11 +122,13 @@ public class AvatarServiceImpl implements AvatarService {
         ) {
             bis.transferTo(bos);
         } catch (Exception e) {
-            throw new UnableToUploadFileException(UNABLE_TO_UPLOAD, e);
+            throw new UnableToUploadFileException(e);
         }
     }
 
-    private void fillAndSaveAvatar(MultipartFile avatarFile, Student student, Path filePath) {
+    private void fillAndSaveAvatar(MultipartFile avatarFile, Student student, Path filePath, String message) {
+        log.info(getCurrentMethodName() + CREATED);
+
         Avatar avatar = getOrCreateAvatar(student.getId());
         avatar.setStudent(student);
         avatar.setFilePath(filePath.toString());
@@ -105,7 +139,7 @@ public class AvatarServiceImpl implements AvatarService {
             avatar.setData(avatarFile.getBytes());
             avatarRepository.save(avatar);
         } catch (Exception e) {
-            throw new UnableToCreateException(UNABLE_TO_CREATE, e);
+            throw new UnableToCreateException(e, message);
         }
     }
 
@@ -113,5 +147,11 @@ public class AvatarServiceImpl implements AvatarService {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
+    public static String getCurrentMethodName() {
+        return StackWalker.getInstance()
+                .walk(s -> s.skip(1).findFirst())
+                .get()
+                .getMethodName();
+    }
 
 }

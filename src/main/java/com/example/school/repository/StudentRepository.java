@@ -5,18 +5,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
-    Collection<Student> findByAge(int age);
+    List<Student> findByAge(int age);
 
-    Collection<Student> findByAgeBetween(int age1, int age2);
-    @Query(value = "select count(*) from student", nativeQuery = true)
+    List<Student> findByAgeBetween(int age1, int age2);
+
+    @Query(value = "select count(*) from students", nativeQuery = true)
     Integer countAllById();
-    @Query(value = "select avg(student.age) from student", nativeQuery = true)
+
+    @Query(value = "select avg(students.age) from students", nativeQuery = true)
     Float averageAgesStudents();
 
-    @Query(value = "select * from student limit :number" +
-            " offset (select count(*) from student) - :number", nativeQuery = true)
-    Collection<Student> getLastFifeStudents(@Param("number") Integer number);
+    @Query(value = "select * from students limit :number" +
+            " offset (select count(*) from students) - :number", nativeQuery = true)
+    List<Student> getLastStudents(@Param("number") Integer number);
 }

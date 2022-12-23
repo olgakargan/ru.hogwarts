@@ -7,7 +7,7 @@ import java.util.logging.Level;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class UnableToDeleteException extends ApiException {
-    public UnableToDeleteException(String resourceName, String fieldName, Object fieldValue) {
+    public UnableToDeleteException(String resourceName, String fieldName, Long id, Object fieldValue) {
         super(String.format("Unable to delete %s with %s: '%s'!", resourceName, fieldName, fieldValue),
                 Level.SEVERE);
     }

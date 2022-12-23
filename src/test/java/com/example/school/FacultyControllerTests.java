@@ -5,7 +5,7 @@ import com.example.school.impl.FacultyServiceImpl;
 import com.example.school.impl.StudentServiceImpl;
 import com.example.school.model.Faculty;
 import com.example.school.repository.FacultyRepository;
-import com.example.school.service.AvatarService;
+import com.example.school.impl.AvatarService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.school.constant.Constant.*;
 import static org.mockito.Mockito.doNothing;
@@ -31,11 +30,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 @WebMvcTest
-class FacultyTest {
+class FacultyControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @MockBean
     private FacultyRepository facultyRepository;
@@ -47,7 +46,7 @@ class FacultyTest {
     private FacultyServiceImpl facultyService;
 
     @MockBean
-    StudentServiceImpl studentService;
+    private StudentServiceImpl studentService;
 
     @Autowired
     @InjectMocks
@@ -103,7 +102,7 @@ class FacultyTest {
 
     @Test
     void getFacultyInfo() throws Exception {
-        when(facultyRepository.findById(ID_ONE)).thenReturn(Optional.of(FACULTY_ONE));
+        when(facultyRepository.getById(ID_ONE)).thenReturn(FACULTY_ONE);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/faculty/{id}", ID_ONE)
                         .accept(MediaType.APPLICATION_JSON)
@@ -119,6 +118,10 @@ class FacultyTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/faculty/{id}", ID_ONE));
 
+//        doThrow(UnableToDeleteException.class).when(facultyRepository).deleteById(ID_TWO);
+//        mockMvc.perform(MockMvcRequestBuilders
+//                .delete("/faculty/{id}", ID_TWO))
+//                .andExpect(status().isBadRequest());
     }
 
     @Test

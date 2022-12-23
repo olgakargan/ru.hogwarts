@@ -1,7 +1,10 @@
 package com.example.school.controller;
 
+import com.example.school.exception.NotFoundException;
 import com.example.school.model.Avatar;
-import com.example.school.service.AvatarService;
+import com.example.school.impl.AvatarService;
+import lombok.Cleanup;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/avatar")
+@Profile("!test")
 public class AvatarController {
     private final AvatarService avatarService;
 
@@ -28,52 +32,60 @@ public class AvatarController {
 
     @PostMapping(value = "/{student_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@PathVariable Long student_id,
-                                               @RequestParam MultipartFile avatar) {
+                                               @RequestParam MultipartFile avatar, String message) {
         try {
-            avatarService.uploadAvatar(student_id, avatar);
+            avatarService.uploadAvatar(student_id, avatar, message);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping(value = "/{id}/avatar")
+    public ResponseEntity<Void> deleteAvatarById(@PathVariable Long id) {
+        avatarService.deleteAvatarById(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(value = "/{id}/avatar-from-db")
     public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long id) {
-        Avatar avatar = avatarService.getAvatar(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
+        Avatar avatar = avatarService.findAvatarById(id);
+        return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.parseMediaType(avatar.getMediaType()))
                 .contentLength(avatar.getData().length)
                 .body(avatar.getData());
     }
 
+
     @GetMapping(value = "/{id}/avatar-from-file")
-    public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException {
-        Avatar avatar = avatarService.getAvatar(id);
-        Path path = Path.of(avatar.getFilePath());
-        try (InputStream is = Files.newInputStream(path);
-             OutputStream os = response.getOutputStream()) {
-            response.setStatus(HttpStatus.OK.value());
+    public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) {
+        try {
+            Avatar avatar = avatarService.findAvatarById(id);
+            Path path = Path.of(avatar.getFilePath());
+            @Cleanup OutputStream os = response.getOutputStream();
+            @Cleanup InputStream is = Files.newInputStream(path);
+            response.setStatus(HttpStatus.ACCEPTED.value());
             response.setContentType(avatar.getMediaType());
             response.setContentLength((int) avatar.getFileSize());
             is.transferTo(os);
+        } catch (RuntimeException | IOException e) {
+            throw new NotFoundException("Avatar for Student", "id", id, e);
         }
     }
 
+
     @GetMapping(value = "/{id}/avatar-from-file2")
     public ResponseEntity<byte[]> downloadAvatar2(@PathVariable Long id) {
-        Avatar avatar = avatarService.getAvatar(id);
-        Path path = Path.of(avatar.getFilePath());
-
-        byte[] media;
         try {
-            media = Files.readAllBytes(path);
+            Avatar avatar = avatarService.findAvatarById(id);
+            Path path = Path.of(avatar.getFilePath());
+            byte[] media = Files.readAllBytes(path);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .contentLength(media.length)
                     .contentType(MediaType.parseMediaType(avatar.getMediaType()))
                     .body(media);
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .contentLength(e.getMessage().length())
@@ -83,9 +95,9 @@ public class AvatarController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Avatar>> getAllExpenses(@RequestParam("page") int pageNumber,
-                                                       @RequestParam("size") int pageSize) {
-        List<Avatar> avatars = avatarService.getAvatars(pageNumber, pageSize);
+    public ResponseEntity<List<Avatar>> getAllAvatars(@RequestParam("page") int pageNumber,
+                                                      @RequestParam("size") int pageSize) {
+        List<Avatar> avatars = avatarService.getAllAvatars(pageNumber, pageSize);
         return ResponseEntity.ok(avatars);
     }
 

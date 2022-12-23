@@ -19,6 +19,6 @@ public class ApiException extends RuntimeException {
         logger.log(level, message);
     }
 
-    public ApiException() {
+    public ApiException(String format, org.apache.logging.log4j.Level level) {
     }
 }

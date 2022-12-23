@@ -1,75 +1,106 @@
 package com.example.school.impl;
 
-import com.example.school.exception.*;
+import com.example.school.exception.NotFoundException;
+import com.example.school.exception.UnableToDeleteException;
+import com.example.school.exception.UnableToUpdateException;
 import com.example.school.model.Faculty;
 import com.example.school.repository.FacultyRepository;
-import com.example.school.service.FacultyService;
+import jdk.internal.module.ModulePath;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-
+import java.lang.module.ModuleReference;
 import java.util.Collection;
-import java.util.Optional;
+import java.util.Set;
 
-import static com.example.school.exception.ApiException.*;
-
+import static com.example.school.impl.StudentServiceImpl.CREATED;
 
 @Service
+@RequiredArgsConstructor
+@Log4j2
 public class FacultyServiceImpl implements FacultyService {
-    private final FacultyRepository repository;
-
-    public FacultyServiceImpl(FacultyRepository repository) {
-        this.repository = repository;
-    }
+    private final FacultyRepository facultyRepository;
 
     @Override
     public Faculty createFaculty(Faculty faculty) {
-        try {
-            return repository.save(faculty);
-        } catch (RuntimeException e) {
-            throw new UnableToCreateException(UNABLE_TO_CREATE, e);
-        }
+        log.info(new Object() {
+        }.getClass().getEnclosingMethod().getName() + CREATED);
+
+            return facultyRepository.save(faculty);
+
     }
 
     @Override
-    public Faculty editFaculty(Faculty faculty) {
+    public Faculty editFaculty(Faculty faculty, String message) {
+        log.info(new Object() {
+        }.getClass().getEnclosingMethod().getName() + CREATED);
+
         try {
-            return repository.save(faculty);
+            return facultyRepository.save(faculty);
         } catch (RuntimeException e) {
-            throw new UnableToUpdateException(UNABLE_TO_UPDATE, e);
+            throw new UnableToUpdateException(e, message);
         }
     }
 
     @Override
     public void deleteFaculty(long id) {
+        log.info(new Object() {
+        }.getClass().getEnclosingMethod().getName() + CREATED);
+
         try {
-            repository.deleteById(id);
+            facultyRepository.deleteById(id);
         } catch (RuntimeException e) {
-            throw new UnableToDeleteException("Faculty", "id", id);
+            throw new UnableToDeleteException("Faculty", "id", id, e);
         }
     }
 
     @Override
-    public Faculty findFaculty(long id) {
-        Optional<Faculty> optionalFaculty = repository.findById(id);
-        if (optionalFaculty.isEmpty()) {
-            throw new NotFoundException("Faculty", "id", id);
+    public Faculty findFaculty(long id, Exception e) {
+        return null;
+    }
+
+    @Override
+    public Set<ModuleReference> getAllFaculties(ModulePath facultyRepository) {
+        return null;
+    }
+
+    @Override
+    public Collection<Faculty> findByColorOrName(String color, String name, FacultyRepository facultyRepository) {
+        return null;
+    }
+
+    @Override
+    public Faculty createFaculty(Faculty faculty, String message) {
+        return null;
+    }
+
+    @Override
+    public Faculty findFacultyById(long id) {
+        log.info(new Object() {
+        }.getClass().getEnclosingMethod().getName() + CREATED);
+
+        try {
+            return facultyRepository.getById(id);
+        } catch (Exception e) {
+            throw new NotFoundException("Faculty", "id", id, e);
         }
-        return optionalFaculty.get();
     }
 
     @Override
     public Collection<Faculty> getAllFaculties() {
-        return repository.findAll();
+        log.info(new Object() {
+        }.getClass().getEnclosingMethod().getName() + CREATED);
+
+        return facultyRepository.findAll();
     }
 
     @Override
     public Collection<Faculty> findByColorOrName(String color, String name) {
-        if (color == null && name == null) {
+        log.info(new Object() {
+        }.getClass().getEnclosingMethod().getName() + CREATED);
 
-            return repository.findFacultiesByNameIgnoreCase(name);
-        } else {
-            return repository.findFacultiesByColorIgnoreCase(color);
-        }
+        return facultyRepository.findFacultiesByColorIgnoreCase(color);
     }
 
 }
