@@ -118,10 +118,6 @@ class FacultyControllerTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/faculty/{id}", ID_ONE));
 
-//        doThrow(UnableToDeleteException.class).when(facultyRepository).deleteById(ID_TWO);
-//        mockMvc.perform(MockMvcRequestBuilders
-//                .delete("/faculty/{id}", ID_TWO))
-//                .andExpect(status().isBadRequest());
     }
 
     @Test
