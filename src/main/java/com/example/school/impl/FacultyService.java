@@ -19,6 +19,8 @@ public interface FacultyService {
 
     Faculty createFaculty(Faculty faculty, String message);
 
+    Collection<Faculty> getFacultiesByColor(String color);
+
     Faculty findFacultyById(long id);
 
     Faculty editFaculty(Faculty faculty, String message);

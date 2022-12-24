@@ -10,6 +10,8 @@ import com.example.school.repository.FacultyRepository;
 import com.example.school.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,11 +26,10 @@ public class StudentServiceImpl implements StudentService {
     private final FacultyRepository facultyRepository;
     private final StudentMapper mapper;
     static final String CREATED = " started!";
-
+    Logger logger = LoggerFactory.getLogger(StudentService.class);
     @Override
     public StudentDto createStudent(StudentDto studentDto, String message) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method createStudent(studentDto = {}, message = {})", studentDto, message);
 
         try {
             Faculty faculty = facultyRepository.findFacultyByName(studentDto.getFaculty());
@@ -44,8 +45,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDto editStudent(StudentDto studentDto, String message) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method editStudent (studentDto = {}, message = {})", studentDto, message);
 
         try {
             Faculty faculty = facultyRepository.findFacultyByName(studentDto.getFaculty());
@@ -59,8 +59,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDto addStudentToFaculty(StudentDto studentDto, Long facultyId) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method addStudentToFaculty (studentDto = {}, facultyId = {})", studentDto, facultyId);
 
         try {
             Faculty faculty = facultyRepository.getById(facultyId);
@@ -75,8 +74,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
 
     public void deleteStudentById(long id) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method deleteStudentById (studentId = {})", id);
 
         try {
             studentRepository.deleteById(id);
@@ -87,8 +85,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDto findStudentById(long id) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method findStudentById (studentId = {})", id);
 
         try {
             Student student = studentRepository.getById(id);
@@ -100,8 +97,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDto> getAllStudents() {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method getAllStudents ");
 
         return MapperConfiguration.convertList(
                 studentRepository.findAll(), mapper::toDto);
@@ -109,8 +105,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDto> findByAge(int age) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method findByAge (studentId = {})", age);
 
         return MapperConfiguration.convertList(
                 studentRepository.findByAge(age), mapper::toDto);
@@ -118,8 +113,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDto> findByAgeBetween(int min, int max) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method findByAgeBetween (min = {}),max = {})", min, max);
 
         if (max < min) {
             throw new BadRequestException(FIRST_AGE_MORE_THAN_SECOND_ERROR);
@@ -130,24 +124,21 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Integer getStudentsCount() {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method getStudentsCount");
 
         return studentRepository.countAllById();
     }
 
     @Override
     public Float getStudentsAgesAverage() {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method getStudentsAgesAverage");
 
         return studentRepository.averageAgesStudents();
     }
 
     @Override
     public List<StudentDto> getLastStudents(Integer number) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method ggetLastStudents (limit = {})", number);
 
         return MapperConfiguration.convertList(
                 studentRepository.getLastStudents(number), mapper::toDto);

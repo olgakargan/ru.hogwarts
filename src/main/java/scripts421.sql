@@ -1,3 +1,7 @@
+create table student
+(
+    age int not null
+);
 alter table student
     add constraint age_constraint check ( age >= 25 );
 alter table student

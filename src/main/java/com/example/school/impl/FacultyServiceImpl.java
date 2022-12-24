@@ -5,27 +5,26 @@ import com.example.school.exception.UnableToDeleteException;
 import com.example.school.exception.UnableToUpdateException;
 import com.example.school.model.Faculty;
 import com.example.school.repository.FacultyRepository;
-import jdk.internal.module.ModulePath;
+import com.example.school.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.ModuleReference;
 import java.util.Collection;
-import java.util.Set;
-
-import static com.example.school.impl.StudentServiceImpl.CREATED;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
-public class FacultyServiceImpl implements FacultyService {
-    private final FacultyRepository facultyRepository;
 
+
+public abstract class FacultyServiceImpl implements FacultyService {
+    private final FacultyRepository facultyRepository;
+    private final StudentRepository studentRepository;
+    Logger logger = LoggerFactory.getLogger(FacultyService.class);
     @Override
     public Faculty createFaculty(Faculty faculty) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+
+        logger.debug("Calling method createFaculty");
 
             return facultyRepository.save(faculty);
 
@@ -33,8 +32,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Faculty editFaculty(Faculty faculty, String message) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
+        logger.debug("Calling method editFaculty (faculty = {},message = {}))", faculty,message);
 
         try {
             return facultyRepository.save(faculty);
@@ -45,9 +43,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public void deleteFaculty(long id) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
-
+        logger.debug("Calling method deleteFaculty (facultyId = {})", id);
         try {
             facultyRepository.deleteById(id);
         } catch (RuntimeException e) {
@@ -55,31 +51,18 @@ public class FacultyServiceImpl implements FacultyService {
         }
     }
 
-    @Override
-    public Faculty findFaculty(long id, Exception e) {
-        return null;
-    }
 
     @Override
-    public Set<ModuleReference> getAllFaculties(ModulePath facultyRepository) {
-        return null;
+    public Collection<Faculty> getFacultiesByColor(String color) {
+        logger.debug("Calling method getFacultiesByColor (color = {})", color);
+        return facultyRepository.findByColor(color);
     }
 
-    @Override
-    public Collection<Faculty> findByColorOrName(String color, String name, FacultyRepository facultyRepository) {
-        return null;
-    }
 
-    @Override
-    public Faculty createFaculty(Faculty faculty, String message) {
-        return null;
-    }
 
     @Override
     public Faculty findFacultyById(long id) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
-
+        logger.debug("Calling method findFaculty (facultyId = {})", id);
         try {
             return facultyRepository.getById(id);
         } catch (Exception e) {
@@ -89,17 +72,13 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Collection<Faculty> getAllFaculties() {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
-
+        logger.debug("Calling method getFacultyStudents");
         return facultyRepository.findAll();
     }
 
     @Override
     public Collection<Faculty> findByColorOrName(String color, String name) {
-        log.info(new Object() {
-        }.getClass().getEnclosingMethod().getName() + CREATED);
-
+        logger.debug("Calling method findFacultiesByNameOrColor (color = {}, name = {})",color, name);
         return facultyRepository.findFacultiesByColorIgnoreCase(color);
     }
 

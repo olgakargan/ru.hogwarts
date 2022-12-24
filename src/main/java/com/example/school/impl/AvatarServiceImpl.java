@@ -11,6 +11,8 @@ import com.example.school.repository.AvatarRepository;
 import com.example.school.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.example.school.impl.StudentServiceImpl.CREATED;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Service
@@ -39,10 +40,10 @@ public class AvatarServiceImpl implements AvatarService {
     private final StudentRepository studentRepository;
     private final StudentMapper mapper;
 
-
+    Logger logger = LoggerFactory.getLogger(AvatarService.class);
     @Override
     public void uploadAvatar(Long id, MultipartFile avatarFile, String message) {
-        log.info(getCurrentMethodName() + CREATED);
+        logger.debug("Calling method uploadAvatar (studentId = {})", avatarFile);
 
         Student student;
         try {
@@ -58,7 +59,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public void deleteAvatarById(Long id) {
-        log.info(getCurrentMethodName() + CREATED);
+        logger.debug("Calling method deleteAvatarById (studentId = {})", id);
 
         Optional<Avatar> avatar = avatarRepository.findById(id);
         try {
@@ -71,14 +72,14 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public Avatar getOrCreateAvatar(Long id) {
-        log.info(getCurrentMethodName() + CREATED);
+        logger.debug("Calling method getOrCreateAvatar (studentId = {})", id);
 
         return avatarRepository.findById(id).orElse(new Avatar());
     }
 
     @Override
     public Avatar findAvatarById(Long id) {
-        log.info(getCurrentMethodName() + CREATED);
+        logger.debug("Calling method findAvatarById (studentId = {})", id);
 
         try {
             return avatarRepository.getById(id);
@@ -89,7 +90,7 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public List<Avatar> getAllAvatars(int pageNumber, int pageSize) {
-        log.info(getCurrentMethodName() + CREATED);
+        logger.debug("Calling method getAllAvatars (pageNumber = {}, pageSize = {})", pageNumber, pageSize);
         PageRequest pageRequest = PageRequest.of(--pageNumber, pageSize,
                 Sort.Direction.ASC, "fileSize");
         return avatarRepository.findAll(pageRequest).getContent();
@@ -97,8 +98,7 @@ public class AvatarServiceImpl implements AvatarService {
 
 
     private Path getNewPath(MultipartFile avatarFile, Student student) {
-        log.info(getCurrentMethodName() + CREATED);
-
+        logger.debug("Calling method getNewPath (avatarFile = {}, student = {})", avatarFile, student);
         Path filePath;
         try {
             filePath = Path.of(avatarsDir, mapper.toDto(student) + "." +
@@ -112,8 +112,7 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     private void copyFile(MultipartFile avatarFile, Path filePath) {
-        log.info(getCurrentMethodName() + CREATED);
-
+        logger.debug("Calling method copyFile (avatarFile = {}, filePath = {})", avatarFile, filePath);
         try (
                 InputStream is = avatarFile.getInputStream();
                 OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
@@ -125,9 +124,9 @@ public class AvatarServiceImpl implements AvatarService {
             throw new UnableToUploadFileException(e);
         }
     }
-
     private void fillAndSaveAvatar(MultipartFile avatarFile, Student student, Path filePath, String message) {
-        log.info(getCurrentMethodName() + CREATED);
+        logger.debug("Calling method getNewPath (avatarFile = {}, student = {}, filePath = {}, message = {})",
+                avatarFile,student, filePath, message);
 
         Avatar avatar = getOrCreateAvatar(student.getId());
         avatar.setStudent(student);
