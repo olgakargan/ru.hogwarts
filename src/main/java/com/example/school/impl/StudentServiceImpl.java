@@ -15,20 +15,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.school.exception.ApiException.FIRST_AGE_MORE_THAN_SECOND_ERROR;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class StudentServiceImpl implements StudentService {
+public abstract class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final FacultyRepository facultyRepository;
     private final StudentMapper mapper;
     static final String CREATED = " started!";
     Logger logger = LoggerFactory.getLogger(StudentService.class);
+    private String message;
+
     @Override
-    public StudentDto createStudent(StudentDto studentDto, String message) {
+    public StudentDto createStudent(StudentDto studentDto) {
         logger.debug("Calling method createStudent(studentDto = {}, message = {})", studentDto, message);
 
         try {
@@ -44,7 +47,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDto editStudent(StudentDto studentDto, String message) {
+    public StudentDto editStudent(StudentDto studentDto) {
         logger.debug("Calling method editStudent (studentDto = {}, message = {})", studentDto, message);
 
         try {
@@ -143,5 +146,18 @@ public class StudentServiceImpl implements StudentService {
         return MapperConfiguration.convertList(
                 studentRepository.getLastStudents(number), mapper::toDto);
     }
+    @Override
+    public List<String> getStudentsBeginWithLetter(Character A) {
+        log.info(new Object() {
+        }.getClass().getEnclosingMethod().getName() + CREATED);
+
+        return studentRepository.findAll()
+                .stream()
+                .filter(student -> student.getName().startsWith(String.valueOf(A)))
+                .map(student -> student.getName().toUpperCase())
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
 
 }

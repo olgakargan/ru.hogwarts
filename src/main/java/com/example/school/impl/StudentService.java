@@ -6,11 +6,11 @@ import com.example.school.dto.StudentDto;
 import java.util.List;
 
 public interface StudentService {
-    StudentDto createStudent(StudentDto studentDto, String message);
+    StudentDto createStudent(StudentDto studentDto);
 
     StudentDto findStudentById(long id);
 
-    StudentDto editStudent(StudentDto studentDto, String message);
+    StudentDto editStudent(StudentDto studentDto);
 
     void deleteStudentById(long id);
 
@@ -28,4 +28,7 @@ public interface StudentService {
 
     StudentDto addStudentToFaculty(StudentDto studentDto, Long faculty_id);
 
+    double getStudentsAgesAverage2();
+
+    List<String> getStudentsBeginWithLetter(Character x);
 }

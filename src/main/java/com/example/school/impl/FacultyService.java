@@ -23,11 +23,13 @@ public interface FacultyService {
 
     Faculty findFacultyById(long id);
 
-    Faculty editFaculty(Faculty faculty, String message);
+    Faculty editFaculty(Faculty faculty);
 
     void deleteFaculty(long id);
 
     Collection<Faculty> getAllFaculties();
 
     Collection<Faculty> findByColorOrName(String color, String name);
+
+    String maxLongFacultyName();
 }

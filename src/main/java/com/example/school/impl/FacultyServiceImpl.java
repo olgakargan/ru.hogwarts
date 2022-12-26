@@ -7,20 +7,26 @@ import com.example.school.model.Faculty;
 import com.example.school.repository.FacultyRepository;
 import com.example.school.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Comparator;
+
+import static com.example.school.impl.StudentServiceImpl.CREATED;
 
 @Service
 @RequiredArgsConstructor
-
+@Log4j2
 
 public abstract class FacultyServiceImpl implements FacultyService {
     private final FacultyRepository facultyRepository;
     private final StudentRepository studentRepository;
     Logger logger = LoggerFactory.getLogger(FacultyService.class);
+    private String message;
+
     @Override
     public Faculty createFaculty(Faculty faculty) {
 
@@ -31,7 +37,7 @@ public abstract class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public Faculty editFaculty(Faculty faculty, String message) {
+    public Faculty editFaculty(Faculty faculty) {
         logger.debug("Calling method editFaculty (faculty = {},message = {}))", faculty,message);
 
         try {
@@ -80,6 +86,17 @@ public abstract class FacultyServiceImpl implements FacultyService {
     public Collection<Faculty> findByColorOrName(String color, String name) {
         logger.debug("Calling method findFacultiesByNameOrColor (color = {}, name = {})",color, name);
         return facultyRepository.findFacultiesByColorIgnoreCase(color);
+    }
+    @Override
+    public String maxLongFacultyName() {
+        log.info(new Object() {
+        }.getClass().getEnclosingMethod().getName() + CREATED);
+
+        return facultyRepository.findAll()
+                .stream()
+                .map(Faculty::getName)
+                .max(Comparator.comparing(String::length))
+                .orElse("");
     }
 
 }
