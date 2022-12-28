@@ -1,11 +1,11 @@
 package com.example.school;
 
 import com.example.school.controller.FacultyController;
+import com.example.school.impl.AvatarService;
 import com.example.school.impl.FacultyServiceImpl;
 import com.example.school.impl.StudentServiceImpl;
 import com.example.school.model.Faculty;
 import com.example.school.repository.FacultyRepository;
-import com.example.school.impl.AvatarService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -98,7 +98,7 @@ class FacultyControllerTest {
                 .andExpect(jsonPath("$.id").value(ID_ONE))
                 .andExpect(jsonPath("$.name").value(GOOD_NAME2))
                 .andExpect(jsonPath("$.color").value(GOOD_COLOR2));
-    } // todo given when than
+    }
 
     @Test
     void getFacultyInfo() throws Exception {
@@ -117,6 +117,7 @@ class FacultyControllerTest {
         doNothing().when(facultyRepository).deleteById(ID_ONE);
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/faculty/{id}", ID_ONE));
+
 
     }
 
